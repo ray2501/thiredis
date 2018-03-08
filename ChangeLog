@@ -1,5 +1,6 @@
 2018-03-08 Danilo Chang
 
+    * Add basic test cases
     * Bump to version 0.2
     * Add new sub command: appendcommand, reply
     * Update hiredis files
