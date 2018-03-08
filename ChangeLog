@@ -1,0 +1,11 @@
+2018-03-08 Danilo Chang
+
+    * Bump to version 0.2
+    * Add new sub command: appendcommand, reply
+    * Update hiredis files
+
+2016-11-26 Danilo Chang
+
+    * Add hiredis files
+    * Download sample extension
+
