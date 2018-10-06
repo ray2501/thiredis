@@ -31,14 +31,14 @@ test hiredis-1.2 {disconnect, error} {*}{
 
 test hiredis-1.3 {connect} {*}{
     -body {
-        hiredis connect localhost 11211
+        hiredis connect localhost 6379
     }
     -result {1}
 }
 
 test hiredis-1.4 {command, SET} {*}{
     -body {
-        set result [hiredis command "SET foo Hello World"]
+        set result [hiredis command {SET foo Hello}]
     }
     -result {OK}
 }

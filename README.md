@@ -47,7 +47,7 @@ Example
 =====
 
     package require thiredis
-    hiredis connect localhost 11211
+    hiredis connect localhost 6379
 
     set result [hiredis command "AUTH danilo"]
     puts "AUTH: $result"
@@ -55,7 +55,7 @@ Example
     set result [hiredis command "PING"]
     puts "PING: $result"
 
-    set result [hiredis command "SET foo Hello World"]
+    set result [hiredis command "SET foo Hello"]
     puts "SET: $result"
 
     set result [hiredis command "GET foo"]
