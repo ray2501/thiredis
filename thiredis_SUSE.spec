@@ -8,7 +8,7 @@ Version:       0.3
 Release:       0
 License:       BSD 3-Clause License
 Group:         Development/Libraries/Tcl
-Source:        thiredis_0.2.tar.gz
+Source:        %{name}-%{version}.tar.gz
 URL:           https://github.com/ray2501/thiredis
 BuildRequires: autoconf
 BuildRequires: gcc
@@ -22,7 +22,7 @@ It is Tcl wrapper for Redis client hiredis.
 It is using Synchronous API and only for test.
 
 %prep
-%setup -q -n %{name}
+%setup -q -n %{name}-%{version}
 
 %build
 ./configure \
