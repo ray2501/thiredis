@@ -221,10 +221,8 @@ static int redisContextWaitReady(redisContext *c, long msec) {
             return REDIS_ERR;
         }
 
-        if (redisCheckConnectDone(c, &res) != REDIS_OK || res == 0) {
-            redisCheckSocketError(c);
+        if (redisCheckSocketError(c) != REDIS_OK)
             return REDIS_ERR;
-        }
 
         return REDIS_OK;
     }
@@ -234,37 +232,13 @@ static int redisContextWaitReady(redisContext *c, long msec) {
     return REDIS_ERR;
 }
 
-int redisCheckConnectDone(redisContext *c, int *completed) {
-    int rc = connect(c->fd, (const struct sockaddr *)c->saddr, c->addrlen);
-    if (rc == 0) {
-        *completed = 1;
-        return REDIS_OK;
-    }
-    switch (errno) {
-    case EISCONN:
-        *completed = 1;
-        return REDIS_OK;
-    case EALREADY:
-    case EINPROGRESS:
-    case EWOULDBLOCK:
-        *completed = 0;
-        return REDIS_OK;
-    default:
-        return REDIS_ERR;
-    }
-}
-
 int redisCheckSocketError(redisContext *c) {
-    int err = 0, errno_saved = errno;
+    int err = 0;
     socklen_t errlen = sizeof(err);
 
     if (getsockopt(c->fd, SOL_SOCKET, SO_ERROR, &err, &errlen) == -1) {
         __redisSetErrorFromErrno(c,REDIS_ERR_IO,"getsockopt(SO_ERROR)");
         return REDIS_ERR;
-    }
-
-    if (err == 0) {
-        err = errno_saved;
     }
 
     if (err) {
@@ -313,13 +287,13 @@ static int _redisContextConnectTcp(redisContext *c, const char *addr, int port,
     if (c->tcp.host != addr) {
         free(c->tcp.host);
 
-        c->tcp.host = strdup(addr);
+        c->tcp.host = hi_strdup(addr);
     }
 
     if (timeout) {
         if (c->timeout != timeout) {
             if (c->timeout == NULL)
-                c->timeout = malloc(sizeof(struct timeval));
+                c->timeout = hi_malloc(sizeof(struct timeval));
 
             memcpy(c->timeout, timeout, sizeof(struct timeval));
         }
@@ -338,7 +312,7 @@ static int _redisContextConnectTcp(redisContext *c, const char *addr, int port,
         c->tcp.source_addr = NULL;
     } else if (c->tcp.source_addr != source_addr) {
         free(c->tcp.source_addr);
-        c->tcp.source_addr = strdup(source_addr);
+        c->tcp.source_addr = hi_strdup(source_addr);
     }
 
     snprintf(_port, 6, "%d", port);
@@ -399,27 +373,12 @@ addrretry:
                 goto error;
             }
         }
-
-        /* For repeat connection */
-        if (c->saddr) {
-            free(c->saddr);
-        }
-        c->saddr = malloc(p->ai_addrlen);
-        memcpy(c->saddr, p->ai_addr, p->ai_addrlen);
-        c->addrlen = p->ai_addrlen;
-
         if (connect(s,p->ai_addr,p->ai_addrlen) == -1) {
             if (errno == EHOSTUNREACH) {
                 redisContextCloseFd(c);
                 continue;
-            } else if (errno == EINPROGRESS) {
-                if (blocking) {
-                    goto wait_for_ready;
-                }
-                /* This is ok.
-                 * Note that even when it's in blocking mode, we unset blocking
-                 * for `connect()`
-                 */
+            } else if (errno == EINPROGRESS && !blocking) {
+                /* This is ok. */
             } else if (errno == EADDRNOTAVAIL && reuseaddr) {
                 if (++reuses >= REDIS_CONNECT_RETRIES) {
                     goto error;
@@ -428,7 +387,6 @@ addrretry:
                     goto addrretry;
                 }
             } else {
-                wait_for_ready:
                 if (redisContextWaitReady(c,timeout_msec) != REDIS_OK)
                     goto error;
             }
@@ -482,12 +440,12 @@ int redisContextConnectUnix(redisContext *c, const char *path, const struct time
 
     c->connection_type = REDIS_CONN_UNIX;
     if (c->unix_sock.path != path)
-        c->unix_sock.path = strdup(path);
+        c->unix_sock.path = hi_strdup(path);
 
     if (timeout) {
         if (c->timeout != timeout) {
             if (c->timeout == NULL)
-                c->timeout = malloc(sizeof(struct timeval));
+                c->timeout = hi_malloc(sizeof(struct timeval));
 
             memcpy(c->timeout, timeout, sizeof(struct timeval));
         }

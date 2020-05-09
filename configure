@@ -5333,7 +5333,7 @@ done
 #-----------------------------------------------------------------------
 
 
-    vars="tclredis.c net.c hiredis.c sds.c async.c read.c"
+    vars="tclredis.c net.c hiredis.c sds.c async.c read.c alloc.c"
     for i in $vars; do
 	case $i in
 	    \$*)
