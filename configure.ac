@@ -19,7 +19,7 @@ dnl	to configure the system for the local environment.
 # so that we create the export library with the dll.
 #-----------------------------------------------------------------------
 
-AC_INIT([thiredis], [0.4])
+AC_INIT([thiredis], [0.5])
 
 #--------------------------------------------------------------------
 # Call TEA_INIT as the first TEA_ macro to set up initial vars.
@@ -71,7 +71,7 @@ TEA_SETUP_COMPILER
 # and PKG_TCL_SOURCES.
 #-----------------------------------------------------------------------
 
-TEA_ADD_SOURCES([tclredis.c net.c hiredis.c sds.c async.c read.c alloc.c])
+TEA_ADD_SOURCES([tclredis.c net.c hiredis.c sds.c async.c read.c alloc.c sockcompat.c])
 TEA_ADD_HEADERS([])
 TEA_ADD_INCLUDES([])
 TEA_ADD_LIBS([])
