@@ -6,7 +6,7 @@ Name:          thiredis
 Summary:       Tcl wrapper for Redis client hiredis
 Version:       0.5
 Release:       0
-License:       BSD 3-Clause License
+License:       BSD-3-Clause
 Group:         Development/Libraries/Tcl
 Source:        %{name}-%{version}.tar.gz
 URL:           https://github.com/ray2501/thiredis
