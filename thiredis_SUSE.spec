@@ -4,7 +4,7 @@
 
 Name:          thiredis
 Summary:       Tcl wrapper for Redis client hiredis
-Version:       0.5
+Version:       0.6
 Release:       0
 License:       BSD-3-Clause
 Group:         Development/Libraries/Tcl
