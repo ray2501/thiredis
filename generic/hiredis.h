@@ -47,8 +47,8 @@ typedef long long ssize_t;
 
 #define HIREDIS_MAJOR 1
 #define HIREDIS_MINOR 0
-#define HIREDIS_PATCH 1
-#define HIREDIS_SONAME 1.0.1-dev
+#define HIREDIS_PATCH 2
+#define HIREDIS_SONAME 1.0.0
 
 /* Connection type can be blocking or non-blocking and is set in the
  * least significant bit of the flags field in redisContext. */
@@ -255,7 +255,7 @@ typedef struct redisContext {
     } unix_sock;
 
     /* For non-blocking connect */
-    struct sockaddr *saddr;
+    struct sockadr *saddr;
     size_t addrlen;
 
     /* Optional data and corresponding destructor users can use to provide
