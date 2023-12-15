@@ -1,5 +1,6 @@
 2023-12-15 Danilo Chang
 
+    * Bump to version 0.7
     * Update tclconfig files
     * Update hiredis files
 
