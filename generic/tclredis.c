@@ -12,7 +12,7 @@ extern "C" {
 #include <string.h>
 #include "hiredis.h"
 
-static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[]);
+static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * const objv[]);
 
 /*
  * Only the _Init function is exported.
@@ -30,16 +30,15 @@ extern DLLEXPORT int	Thiredis_Init(Tcl_Interp * interp);
 
 redisContext *c = NULL;
 
-static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * const objv[])
 {
   int cmd;
-  redisReply *reply;
 
   enum {
      CMD_CONNECT, CMD_DISCONNECT, CMD_COMMAND, CMD_APPENDCOMMAND, CMD_REPLY,
   };
 
-  static CONST char *sCmd[] = {
+  static const char *sCmd[] = {
     "connect", "disconnect", "command", "appendcommand", "reply",
     0
   };
@@ -59,7 +58,7 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CO
       struct timeval timeout = { 3, 0 }; // 3 seconds
       char *hostname = NULL;
       int port = 0;
-      int len = 0;
+      Tcl_Size len = 0;
 
       if( objc != 4){
         Tcl_WrongNumArgs(interp, 1, objv, "hostname port");
@@ -113,7 +112,7 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CO
     case CMD_COMMAND: {
       Tcl_Obj *return_obj;
       char *command = NULL;
-      int len = 0;
+      Tcl_Size len = 0;
       redisReply *reply;
 
       if( objc != 3){
@@ -141,8 +140,7 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CO
     case CMD_APPENDCOMMAND: {
       Tcl_Obj *return_obj;
       char *command = NULL;
-      int len = 0;
-      redisReply *reply;
+      Tcl_Size len = 0;
 
       if( objc != 3){
         Tcl_WrongNumArgs(interp, 2, objv, "command");
@@ -166,8 +164,6 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CO
 
     case CMD_REPLY: {
       Tcl_Obj *return_obj;
-      char *command = NULL;
-      int len = 0;
       redisReply *reply;
 
       if( objc != 2){
@@ -178,7 +174,7 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CO
       if(c == NULL)
         return TCL_ERROR;
 
-      redisGetReply(c, &reply);
+      redisGetReply(c, (void **) &reply);
       return_obj = Tcl_NewStringObj( reply->str, -1 );
       freeReplyObject(reply);
 
@@ -211,7 +207,7 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * CO
 int
 Thiredis_Init(Tcl_Interp *interp)
 {
-    if (Tcl_InitStubs(interp, "8.4", 0) == NULL) {
+    if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
 	return TCL_ERROR;
     }
 
