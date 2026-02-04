@@ -35,11 +35,13 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * co
   int cmd;
 
   enum {
-     CMD_CONNECT, CMD_DISCONNECT, CMD_COMMAND, CMD_APPENDCOMMAND, CMD_REPLY,
+     CMD_CONNECT, CMD_CONNECTUNIX, CMD_DISCONNECT,
+     CMD_COMMAND, CMD_APPENDCOMMAND, CMD_REPLY,
   };
 
   static const char *sCmd[] = {
-    "connect", "disconnect", "command", "appendcommand", "reply",
+    "connect", "connectUnix", "disconnect",
+    "command", "appendcommand", "reply",
     0
   };
 
@@ -84,6 +86,33 @@ static int Redis_Cmd(ClientData arg, Tcl_Interp * interp, int objc, Tcl_Obj * co
          return_obj = Tcl_NewBooleanObj(0);
       } else {
          return_obj = Tcl_NewBooleanObj(1);
+      }
+
+      Tcl_SetObjResult(interp, return_obj);
+      break;
+    }
+
+    case CMD_CONNECTUNIX: {
+      Tcl_Obj *return_obj;
+      struct timeval timeout = { 3, 0 }; // 3 seconds
+      char *path = NULL;
+      Tcl_Size len = 0;
+
+      if( objc != 3){
+        Tcl_WrongNumArgs(interp, 1, objv, "path");
+        return TCL_ERROR;
+      }
+
+      path = Tcl_GetStringFromObj(objv[2], &len);
+      if( !path || len < 1 ) {
+        return TCL_ERROR;
+      }
+
+      c = redisConnectUnixWithTimeout(path, timeout);
+      if(c == NULL || c->err) {
+        return_obj = Tcl_NewBooleanObj(0);
+      } else {
+        return_obj = Tcl_NewBooleanObj(1);
       }
 
       Tcl_SetObjResult(interp, return_obj);

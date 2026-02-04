@@ -37,6 +37,7 @@ Commands
 =====
 
 hiredis connect hostname port  
+hiredis connectUnix path  
 hiredis disconnect  
 hiredis command request  
 hiredis appendcommand request  
